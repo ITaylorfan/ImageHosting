@@ -1,0 +1,735 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+  <meta name="keywords" content="ITaylorfan图床，免费图床"/>
+  <meta name="description" content="ITaylorfan图床，免费图床"/>
+  <title>图片管理 - ITaylorfan的图床</title>
+  
+<link rel="stylesheet" href="/static/stylesheets/my/context.standalone.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/viewerjs@1.5.0/dist/viewer.min.css">
+
+<link rel="shortcut icon" href="/static/images/TS2-22.jpg">
+<link rel="stylesheet" href="/static/iconfont/iconfont.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@0.4.3/dist/css/mdui.min.css">
+<link rel="stylesheet" href="/static/stylesheets/my/app1.4.css">
+<link rel="stylesheet" href="/static/stylesheets/my/markdown1.0.css">
+  <!--[if IE]>
+  <script>window.location.href = '/compatibility.html';</script>
+  <![endif]-->
+</head>
+<body class="mdui-theme-accent-indigo mdui-appbar-with-toolbar mdui-drawer-body-left">
+
+<div class="mdui-appbar mdui-appbar-fixed">
+  <div class="mdui-toolbar mdui-color-black">
+    <span mdui-drawer="{target: '#menu'}" class="mdui-btn mdui-btn-icon open-menu"><i class="mdui-icon material-icons">&#xe5d2;</i></span>
+    <a href="/" class="mdui-typo-headline">ITaylorfan的图床</a>
+    <div class="mdui-toolbar-spacer"></div>
+          <!-- Update -->
+          <!-- User -->
+    <a href="javascript:void(0)" mdui-menu="{target: '#user'}" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">&#xe853;</i></a>
+    <ul class="mdui-menu" id="user">
+      <li class="mdui-menu-item">
+        <a href="/auth/myImg" class="mdui-ripple">我的图片</a>
+        <!-- <a href="/user/settings.html" class="mdui-ripple">设置</a> -->
+      </li>
+      <li class="mdui-divider"></li>
+      <li class="mdui-menu-item">
+        <a href="/user/logout" class="mdui-ripple">退出账号</a>
+      </li>
+    </ul>
+        <!-- Theme -->
+    <a id="set-theme" href="javascript:app.toggleTheme()" class="mdui-btn mdui-btn-icon">
+      <i class="mdui-icon material-icons">&#xe3a9;</i>
+    </a>
+  </div>
+</div>
+
+
+<div id="menu" class="mdui-drawer mdui-drawer-open">
+  <div class="mdui-list" mdui-collapse="{accordion: true}">
+    <a class="mdui-list-item mdui-ripple " href="/">
+      <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">&#xe88a;</i>
+      <div class="mdui-list-item-content">首页</div>
+    </a>
+    <a class="mdui-list-item mdui-ripple mdui-list-item-active" href="/auth/myImg">
+        <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-deep-orange">&#xe251;</i>
+        <div class="mdui-list-item-content">我的图片</div>
+      </a>
+      <!-- 暂未实现 -->
+
+        <!-- <a class="mdui-list-item mdui-ripple " href="/index/api.html">
+      <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">&#xe157;</i>
+      <div class="mdui-list-item-content">接口</div>
+    </a> -->
+    <!-- <a class="mdui-list-item mdui-ripple " href="/user/settings.html">
+      <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-theme">&#xe8b8;</i>
+      <div class="mdui-list-item-content">设置</div>
+    </a> -->
+        <div class="quota-container">
+      <p>容量使用：</p>
+      <progress max="<%=max%>" value="<%=usage%>"></progress>
+      <p>
+        <span class="use-quota"><%=use_quota%></span> /
+        <span class="quota"><%=quota%></span>
+      </p>
+    </div>
+      </div>
+</div>
+
+
+<div class="mdui-container-fluid">
+  <main>
+    <div class="images-container">
+      <div class="screen-box mdui-m-b-1">
+        <div class="mdui-chip">
+          <span class="mdui-chip-icon"><i class="mdui-icon material-icons">&#xe88e;</i></span>
+          <span class="mdui-chip-title">共有 <small class="mdui-text-color-red num">0</small> 张图片</span>
+          <span id="reset" class="mdui-chip-delete" mdui-tooltip="{content: '重置数据', position: 'right'}"><i class="mdui-icon material-icons">&#xe863;</i></span>
+        </div>
+        <div class="mdui-clearfix mdui-m-t-1"></div>
+        <form action="" method="post" id="search-form">
+          <select class="operation mdui-select" name="state" mdui-select>
+            <option value="">选中项</option>
+            <option value="move">移动</option>
+            <option value="delete">删除</option>
+          </select>
+          <div class="mdui-btn-group mdui-m-r-1 mdui-float-left">
+            <button type="button" id="all" class="mdui-btn mdui-ripple mdui-btn-raised mdui-float-right">全选</button>
+          </div>
+          <input class="mdui-textfield-input search-input mdui-float-right" type="text" name="keyword" placeholder="回车搜索..." value="" autocomplete="off"/>
+        </form>
+        <div class="mdui-clearfix"></div>
+        <ul class="breadcrumb mdui-m-t-1">
+          <li class="active"><a data-id="0">Home</a></li>
+        </ul>
+      </div>
+      <div class="mdui-divider mdui-m-b-1"></div>
+      <div class="mdui-row">
+        <div class="box mdui-row-xs-3 mdui-row-sm-9 mdui-row-md-9 mdui-row-lg-10 mdui-col-xl-12">
+          <div class="folders-box"></div>
+          <div class="images-box"></div>
+        </div>
+      </div>
+      <button class="mdui-btn mdui-ripple mdui-center mdui-color-grey-300 mdui-text-color-black-secondary mdui-m-t-2 more"></button>
+      <!-- Info Dialog -->
+      <div class="mdui-dialog" id="info">
+        <div class="mdui-dialog-title"></div>
+        <div class="mdui-dialog-content">
+          <div class="mdui-row">
+            <div class="mdui-col-xs-12 mdui-col-sm-3 mdui-col-md-3 mdui-col-lg-3 mdui-col-xl-3">
+              <img class="qrcode mdui-center" src="/static/images/my/loading.jpg" width="100%">
+            </div>
+            <div class="mdui-col-xs-12 mdui-col-sm-9 mdui-col-md-9 mdui-col-lg-9 mdui-col-xl-9">
+              <table>
+                <tbody>
+                <tr class="alias_name">
+                  <td align="right">别名：</td>
+                  <td align="left"></td>
+                </tr>
+                <tr class="url">
+                  <td align="right">链接：</td>
+                  <td align="left">
+                    <input class="mdui-textfield-input" type="text" placeholder="图片外链" value=""/>
+                  </td>
+                </tr>
+                <tr class="pathname">
+                  <td align="right">位置：</td>
+                  <td align="left"></td>
+                </tr>
+                <tr class="size">
+                  <td align="right">大小：</td>
+                  <td align="left"></td>
+                </tr>
+                <tr class="md5">
+                  <td align="right">MD5：</td>
+                  <td align="left"></td>
+                </tr>
+                <tr class="mime">
+                  <td align="right">类型：</td>
+                  <td align="left"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="mdui-dialog-actions">
+          <div class="mdui-btn-group">
+            <a href="" target="_blank" class="open-url mdui-btn mdui-color-theme-accent mdui-ripple mdui-btn-dense">打开链接</a>
+            <button data-clipboard-action="copy" data-clipboard-text="" class="copy-url mdui-btn mdui-color-teal mdui-ripple mdui-btn-dense">复制链接</button>
+            <button data-id="" class="delete-image mdui-btn mdui-color-red mdui-ripple mdui-btn-dense">删除</button>
+            <button class="mdui-btn mdui-ripple mdui-color-grey-600 mdui-btn-dense" mdui-dialog-cancel>关闭</button>
+          </div>
+        </div>
+      </div>
+      <!-- Folders Dialog -->
+      <div class="mdui-dialog" id="folders">
+        <div class="mdui-dialog-content mdui-p-a-0">
+          <ul class="breadcrumb">
+            <li class="active"><a data-id="0">Home</a></li>
+          </ul>
+          <ul class="mdui-list">
+            <!-- folders -->
+          </ul>
+        </div>
+        <div class="mdui-dialog-actions">
+          <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+          <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<!-- 用于右键复制 -->
+<span id="copy-url" class="none copy-url" data-clipboard-action="copy" data-clipboard-text=""></span>
+
+
+<div class="mdui-fab-wrapper">
+  <button id="to-top" class="mdui-fab mdui-ripple mdui-fab-hide mdui-color-theme-accent">
+    <i class="mdui-icon material-icons">&#xe5d8;</i>
+  </button>
+</div>
+<div id="loading-container">
+  <div class="mask"></div>
+  <div class="loading">
+    <div class="mdui-spinner mdui-spinner-colorful"></div>
+  </div>
+</div>
+<footer>
+  <div class="mdui-container">
+    Copyright &copy; 2021- present <a href="https://www.lsky.pro">Lsky Pro</a>. All rights reserved.
+            <a href="http://beian.miit.gov.cn" target="_blank">鄂ICP备2020023396号</a>. 请勿上传违规图片，违者后果自负。
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mdui@0.4.3/dist/js/mdui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@0.8.0/marked.min.js"></script>
+<script src="/static/javascripts/my/app1.2.js"></script>
+
+<script src="/static/javascripts/my/context.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/viewerjs@1.5.0/dist/viewer.min.js"></script>
+<script src="/static/javascripts/my/jquery-viewer.js"></script>
+<script>
+  $(function () {
+
+    var params = {},
+      viewer,
+      foldersBox = $('.folders-box'),
+      imagesBox = $('.images-box'),
+      totalBox = $('small.num'),
+      foldersDialog = new mdui.Dialog('.mdui-dialog#folders', {
+        modal: true
+      }),
+      selectedImagesId = [],
+      infoDialog = $(".mdui-dialog#info"),
+      qrcodeApi = 'https://api.wispx.cn/qrcode/generate?text=';
+    params.page = 1;
+
+
+    // 函数库
+    var methods = {
+      getData: function (options) {
+        params = options || params;
+        var more = $(".more");
+        more.attr('disabled', true).text('加载中...');
+        app.ajax("/user/getImg", params, function (response) {
+          if (response.code) {
+            var images = response.data.images.data;
+            var folders = response.data.folders;
+            totalBox.text(response.data.images.total);
+
+            if (folders.length) {
+              for (var f = 0; f < folders.length; f++) {
+                foldersBox.append(
+                  ' <div class="mdui-col">' +
+                  '   <div class="item" data-id="' + folders[f].id + '" data-parent-id="' + folders[f].parent_id + '" data-name="' + folders[f].name + '">' +
+                  '     <div class="info">' +
+                  '       <img src="/static/images/my/folder.svg">' +
+                  '     </div>' +
+                  '   <p class="name">' + folders[f].name + '</p>' +
+                  '   </div>' +
+                  '</div>'
+                );
+              }
+            }
+            if (images.length) {
+              for (var i = 0; i < images.length; i++) {
+                var filename = images[i].alias_name || images[i].name;
+
+                imagesBox.append(
+                  '<div class="mdui-col">' +
+                  '  <div class="item" data-id="' + images[i].id + '" data-json=\'' + JSON.stringify(images[i]) + '\' title=' + filename + '>' +
+                  '    <i class="choice iconfont icon-choice"></i>' +
+                  '    <i class="info iconfont icon-info"></i>' +
+                  '      <div class="info image">' +
+                  '        <img data-original="' + images[i].url + '" src="' + images[i].url + '">' +
+                  '      </div>' +
+                  '    <p class="name">' + filename + '</p>' +
+                  '  </div>' +
+                  '</div>');
+              }
+
+              // 图片预览插件
+              if (!viewer) {
+                viewer = $('.images-box').viewer({
+                  url: 'data-original',
+                  zIndex: 999999999
+                });
+              } else {
+                viewer.data('viewer').update();
+              }
+
+              if (response.data.images.current_page == response.data.images.last_page) {
+                return more.attr('disabled', true).text('我也是有底线的~');
+              }
+              params.page++;
+              return more.attr('disabled', false).text('加载更多');
+            }  else {
+              more.attr('disabled', true).text('暂无数据');
+            }
+          }
+        });
+      },
+      resetData: function (options) {
+        foldersBox.html('');
+        imagesBox.html('');
+        methods.getData(options);
+      },
+      // 删除
+      delete: function (id, batch, callback) {
+        var msg = '确认删除该图片吗？';
+        if (batch) {
+          msg = '确认删除选中项图片吗？';
+        }
+        mdui.confirm(msg, function () {
+          app.request("/user/deleteImages", {id: id}, function () {
+            callback && callback();
+          });
+        }, function () {
+
+        }, {confirmText: '确定', cancelText: '取消'});
+      },
+      getFolders: function (options, openDialog, callback) {
+        openDialog = openDialog || false;
+        app.ajax("/user/getFolders", options, function (response) {
+          if (response.code) {
+            $('#folders ul.mdui-list').html('');
+            var folders = response.data;
+            if (folders.length) {
+              for (var i = 0; i < folders.length; i++) {
+                $('#folders ul.mdui-list').append(
+                  '<li class="mdui-list-item mdui-ripple" data-id="' + folders[i].id + '" data-parent-id="' + folders[i].parent_id + '">' +
+                  '  <i class="mdui-list-item-avatar mdui-icon material-icons">&#xe2c7;</i>' +
+                  '  <div class="mdui-list-item-content">' +
+                  '  <div class="mdui-list-item-title">' + folders[i].name + '</div>' +
+                  '    <div class="mdui-list-item-text">' + folders[i].create_time + '</div>' +
+                  '  </div>' +
+                  '</li>'
+                );
+              }
+            } else {
+              $('#folders ul.mdui-list').html('<li class="mdui-text-center mdui-text-color-black-secondary">没有找到文件夹</li>');
+            }
+            foldersDialog.handleUpdate();
+            openDialog && foldersDialog.open();
+            callback && callback();
+          }
+        })
+      }
+    };
+
+    methods.getData();
+
+    // 监听复制操作
+    var clipboard = new ClipboardJS('.copy-url');
+    clipboard.on('success', function(e) {
+      app.msg(true, '复制成功！');
+      e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+      console.error('Action:', e.action);
+      console.error('Trigger:', e.trigger);
+      app.msg(false, '复制失败！');
+    });
+
+    // Context Start
+    context.init({
+      fadeSpeed: 100,
+      filter: function ($obj) {},
+      above: 'auto',
+      preventDoubleContext: true,
+      compress: false
+    });
+
+    // 右键操作
+    $('.images-container').on('contextmenu', '.box', function(e) {
+      var $that = $(e.target), $item = $that.closest('.item');
+      if ($that.parents().hasClass('folders-box')) {
+        context.attach('.folders-box .item', [
+          {header: 'Compressed Menu'},
+          {text: '打开', action: function (e) {
+              $item.click();
+            }
+          },
+          {text: '重新命名', action: function (e) {
+            e.preventDefault();
+              mdui.prompt('请输入文件夹名称',
+                function (value) {
+                  app.ajax("/user/renameFolder", {
+                    id: $item.data('id'),
+                    parent_id: $item.data('parent-id'),
+                    name: value
+                  }, function (response) {
+                    if (response.code) {
+                      $item.attr('data-name', value).find('p.name').text(value);
+                      return app.msg(true, response.msg);
+                    }
+                    mdui.alert(response.msg);
+                  })
+                }
+              );
+            }
+          },
+          {divider: true},
+          {text: '删除', action: function (e) {
+              e.preventDefault();
+              mdui.confirm('确认删除该文件夹吗？', function() {
+                app.ajax("/user/deleteFolder", {id: $item.data('id')}, function (response) {
+                  if (response.code) {
+                    $item.parent().remove();
+                    return app.msg(true, response.msg);
+                  }
+                  mdui.alert(response.msg);
+                })
+              });
+            }
+          },
+        ]);
+      } else if ($that.parents().hasClass('images-box')) {
+        var $item = $that.closest('.item'), data = $item.data('json');
+        context.attach('.images-box .item', [
+          {header: 'Compressed Menu'},
+          {text: '查看图片', action: function (e) {
+              e.preventDefault();
+              $item.find('img').click();
+            }
+          },
+          {text: '新窗口打开图片', href: data.url, target: '_blank'},
+          {divider: true},
+          {text: '重命名', action: function (e) {
+              e.preventDefault();
+              mdui.prompt('请输入图片名称',
+                function (value) {
+                  app.ajax("/user/renameImage", {
+                    id: data.id,
+                    name: value
+                  }, function (response) {
+                    if (response.code) {
+                      methods.resetData();
+                      return app.msg(true, response.msg);
+                    }
+                    mdui.alert(response.msg);
+                  })
+                }
+              );
+            }
+          },
+          {text: '复制链接', action: function (e) {
+              e.preventDefault();
+              $('#copy-url').attr('data-clipboard-text', data.url).click();
+            }
+          },
+          {
+            text: '删除', action: function (e) {
+              e.preventDefault();
+              methods.delete(data.id, false, function () {
+                $item.parent().remove();
+                totalBox.text(parseInt(totalBox.text()) - 1);
+              })
+            }
+          },
+          {
+            text: '属性', action: function (e) {
+              e.preventDefault();
+              $item.find('i.info').click();
+            }
+          }
+        ]);
+      } else {
+        context.attach('.box', [
+          {header: 'Compressed Menu'},
+          {text: '新建文件夹', action: function (e) {
+            e.preventDefault();
+              mdui.prompt('请输入文件夹名称',
+                function (value) {
+                  app.ajax("/user/createFolder", {
+                    parent_id: $('ul.breadcrumb li.active:last-child a').data('id'),
+                    name: value
+                  }, function (response) {
+                    if (response.code) {
+                      methods.resetData();
+                      return app.msg(true, response.msg);
+                    }
+                    mdui.alert(response.msg);
+                  })
+                }
+              );
+            }
+          },
+          {divider: true},
+          {text: '刷新', action: function (e) {
+              // e.preventDefault();
+              methods.resetData();
+            }
+          },
+        ]);
+      }
+    });
+
+    // Context End
+
+    // 文件夹点击操作
+    $('.folders-box').on('click', '.mdui-col', function (e) {
+      var $that = $(e.target), $item = $that.closest('.item');
+      $('.screen-box ul.breadcrumb li:last-child').removeClass('active');
+      $('.screen-box ul.breadcrumb').append(
+        '<li class="active">' +
+        '  <a data-id="' + $item.data('id') + '">' + $item.data('name') + '</a>' +
+        '</li>'
+      );
+      methods.resetData({
+        page: 1,
+        folderId: $item.data('id')
+      });
+    });
+
+    // 面包屑导航点击
+    $('.screen-box ul.breadcrumb').on('click', 'li:not(.active) a', function (e) {
+      e.preventDefault();
+      methods.resetData({
+        page: 1,
+        folderId: $(this).data('id')
+      });
+      $(this).parent('li').addClass('active').nextAll().remove();
+    });
+
+    // 模态框面包屑导航点击
+    $('.mdui-dialog ul.breadcrumb').on('click', 'li:not(.active) a', function (e) {
+      e.preventDefault();
+      methods.getFolders({
+        id: $(this).data('id')
+      });
+      $(this).parent('li').addClass('active').nextAll().remove();
+    });
+
+    // 模态框内文件夹点击操作
+    $('#folders').on('click', 'ul.mdui-list li.mdui-list-item', function (e) {
+      var that = this;
+      methods.getFolders({parentId: $(that).data('id')}, false, function () {
+        $('#folders ul.breadcrumb li:last-child').removeClass('active');
+        $('#folders ul.breadcrumb').append(
+          '<li class="active">' +
+          '  <a data-id="' + $(that).data('id') + '">' + $(that).find('.mdui-list-item-title').text() + '</a>' +
+          '</li>'
+        );
+      });
+    });
+
+    // 确认移动文件夹事件
+    mdui.JQ('#folders').on('confirm.mdui.dialog', function (e) {
+      app.ajax("/user/moveImages", {
+        ids: selectedImagesId,
+        folderId: $('#folders ul.breadcrumb li:last-child a').data('id')
+      }, function (response) {
+        if (response.code) {
+          methods.resetData();
+          return app.msg(true, response.msg);
+        }
+        mdui.alert(response.msg);
+      })
+    });
+
+    // 加载更多
+    $('.more').click(function () {
+      methods.getData();
+    });
+
+    // 筛选
+    $('.screen-box form').submit(function (e) {
+      e.preventDefault();
+      // 清空内容
+      foldersBox.html('')
+      imagesBox.html('');
+      params.keyword = $(this).find("input[name='keyword']").val();
+      params.page = 1;
+      methods.getData();
+    });
+
+    // 选中项操作
+    $('.screen-box .mdui-select.operation').on('close.mdui.select', function () {
+      if ($(this).val() !== '') {
+        var selected = $('.images-box .item.choice');
+        selectedImagesId = [];
+        if (selected.length) {
+          selected.each(function (index, value) {
+            selectedImagesId.push($(value).data('id'));
+          });
+
+          // 删除
+          if ('delete' === $(this).val()) {
+            methods.delete(selectedImagesId, true, function () {
+              selected.remove();
+              totalBox.text(parseInt(totalBox.text()) - selected.length);
+              // methods.getData();
+            });
+          }
+
+          // 移动
+          if ('move' === $(this).val()) {
+            methods.getFolders({parentId: $('#folders ul.breadcrumb li:last-child a').data('id')}, true);
+          }
+
+        } else {
+          app.msg(false, '至少选择一项数据！')
+        }
+      }
+    });
+
+    // 全选
+    var all = false;
+    $('#all').click(function () {
+      var item = $('.images-box .item');
+      if (0 === item.length) {
+        return mdui.snackbar({
+          position: 'right-top',
+          message: '暂无数据！'
+        });
+      }
+      if (all) {
+        item.removeClass('choice');
+        $(this).text('全选');
+        all = false;
+      } else {
+        item.removeClass('choice').addClass('choice');
+        $(this).text('取消全选');
+        all = true;
+      }
+    });
+
+    // 单选
+    imagesBox.on('click', '.item i.choice', function () {
+      $(this).parent('.item').toggleClass('choice');
+    });
+
+    // 图片信息
+    var info = new mdui.Dialog('#info');
+    imagesBox.on('click', '.item i.info', function () {
+      var data = $(this).parent('.item').data('json');
+      if (data) {
+        // 标题
+        infoDialog.find('.mdui-dialog-title').text(data.name);
+        // 二维码
+        infoDialog.find('img.qrcode').attr('src', qrcodeApi + data.url);
+        // 信息
+        for (x in data) {
+          var tr = infoDialog.find('tr.' + x);
+          if (tr.length) {
+            var value = data[x];
+            if (x === 'size') {
+              value = app.bytesToSize(data[x]);
+            }
+            if (tr.find('td:last-child input').length) {
+              tr.find('td:last-child input').val(value);
+            } else {
+              tr.find('td:last-child').text(value);
+            }
+          }
+        }
+        // 按钮
+        infoDialog.find('.open-url').attr('href', data.url);
+        infoDialog.find('.copy-url').attr('data-clipboard-text', data.url);
+        infoDialog.find('.delete-image').attr('data-id', data.id);
+        info.open();
+      } else {
+        app.msg(false, '数据异常！');
+      }
+    });
+
+    // 删除单张图片
+    infoDialog.find('.delete-image').click(function () {
+      var id = $(this).data('id');
+      if (id) {
+        info.close();
+        methods.delete(id, false, function () {
+          imagesBox.find(".item[data-id='" + id + "']").parent().remove();
+          totalBox.text(parseInt(totalBox.text()) - 1);
+        });
+      } else {
+        app.msg(false, '数据异常！');
+      }
+    });
+
+    // 重置数据
+    $('#reset').click(function () {
+      methods.resetData({page:1});
+    });
+  })
+</script>
+
+<script>
+  var ver = '1.6.1';
+  $(function () {
+    var toTop = $("#to-top"), toTopHide = function () {
+      if ($(window).scrollTop() > 50) {
+        toTop.removeClass('mdui-fab-hide');
+      } else {
+        toTop.addClass('mdui-fab-hide');
+      }
+    };
+    if ($(window).scrollTop() > 50) {
+      toTopHide();
+    }
+    $(window).scroll(function() {
+      toTopHide();
+    });
+
+    toTop.click(function () {
+      $('body,html').animate({ scrollTop: 0 }, 500);
+    });
+
+    $('.open-menu').click(function () {
+      if ($(window).width() > 1024) {
+        app.cookie.set('menu', $('body').hasClass('mdui-drawer-body-left') ? 'open' : 'close', 10, '/');
+      }
+    });
+
+    $('#update').click(function () {
+      app.getLastVer(ver, true);
+    });
+
+    $('body').on('click', '.markdown-body a', function (e) {
+      e.preventDefault();
+      window.open(this.href, '_blank');
+    });
+  });
+</script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?f03769835ccbcadd32d46ef8a765fb8d";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录界面 - ITaylorfan的图床</title>
+    <link rel="stylesheet" href="/static/stylesheets/my/uploadLogin.css">
+    <script type="text/javascript" src="/static/javascripts/my/uploadLogin.js"></script>
+</head>
+<body>
+<script>
+
+    $(document).ready(function () {
+        var whei = $(window).width()
+        $("html").css({ fontSize: whei / 24 });
+        $(window).resize(function () {
+            var whei = $(window).width();
+            $("html").css({ fontSize: whei / 24 })
+        });
+    });
+</script>
+<div class="main">
+
+    <div class="header">
+        <div class="header-center fl">
+            <div class="header-title">
+                登录 - ITaylorfan的图床
+            </div>
+            <div class="header-img"></div>
+        </div>
+        <div class="header-bottom fl"></div>
+
+    </div>
+
+    <div class="content">
+        <div class="content-left">
+            <!--<img src="images/d.png" alt="">-->
+        </div>
+        <div class="content-right">
+            <div class="right-infp">
+                <div class="right-infp-name">
+                    <input type="text" id="username" name="username" placeholder="请输入用户名" maxlength="12" required="" value="" autocomplete="off">
+                </div>
+                <div class="right-infp-name">
+                    <input type="password" id="password" name="name" placeholder="请输入密码" autocomplete="off">
+                </div>
+
+                <div class="right-infp-btn">
+                    <button class="btn" id="login">登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- 提交表单 -->
+
+<script>
+    $("#login").click(e=>{
+        // let formData=new FormData()
+        let formData={
+            
+        }
+        let username=$("#username").val()
+        let password=$("#password").val()
+        // formData.append("username",username)
+        // formData.append("password",password)
+        formData["username"]=username
+        formData["password"]=password
+        // console.log(formData)
+        $.ajax({
+            url:"/uploadLogin",
+            method:"post",
+            data:formData,
+            // Illegal invocation 报错 需要加入下面两行代码
+            // processData:false,
+            // contentType:false,
+            success:function(result){
+                // console.log(result)
+                if(result.msg=="登录成功"){
+                    //刷新当前页面
+                    window.location.reload()
+                }else{
+                    alert("账号或密码错误！")
+                }
+            }
+        })
+    })
+</script>
+
+</body>
+</html>

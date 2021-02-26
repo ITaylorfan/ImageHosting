@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/images/1.jpg" type="image/x-icon">
+    <title>电影网首页</title>
+    <script src="/static/javascripts/jquery.min.js"></script>
+    <script src="/static/javascripts/confetti.js"></script>
+    <link rel="stylesheet" href="/static/stylesheets/index.css">
+</head>
+
+<body>
+    <canvas id="canvas" width="1920" height="950"></canvas>
+    <div class="container">
+        <!-- 字符串插入 -->
+        <h1>等号插入数据：</h1>
+        <%=mytitle%>
+        <!-- 可以解析html标签 -->
+        <h1>横杠插入数据：</h1>
+        <%-mytitle%>
+
+        <!-- 条件判断 -->
+        <h1>这是判断的内容</h1>
+        <% if(sex=="男"){%>
+            <h1>蔡徐坤</h1>
+        <%}else{%>
+            <h1>Lisa</h1>
+        <%}%>
+
+        <!-- 循环 -->
+        <h1>这是循环的内容</h1>
+        <% for(let i=0;i<BLACKPINK.length;i++){%>
+            <h2><%=BLACKPINK[i]%></h2>
+        <%}%>
+
+        <!-- ejs注释 -->
+        <%# 
+            这是ejs的注释
+        %> 
+    </div>
+</body>
+
+</html>

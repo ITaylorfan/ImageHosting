@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 图床主页面 -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no" />
+    <meta name="keywords" content="ITaylorfan图床，免费图床" />
+    <meta name="description" content="ITaylorfan的图床，免费图床" />
+    <title>图片上传 - ITaylorfan的图床</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.7/css/fileinput.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css"
+        rossorigin="anonymous" rel="stylesheet">
+
+    <link rel="shortcut icon" href="/static/images/TS2-22.jpg">
+    <link rel="stylesheet" href="/static/iconfont/iconfont.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@0.4.3/dist/css/mdui.min.css">
+    <link rel="stylesheet" href="/static/stylesheets/my/app1.4.css">
+    <link rel="stylesheet" href="/static/stylesheets/my/markdown1.0.css">
+    <!--[if IE]>
+  <script>window.location.href = '/compatibility.html';</script>
+  <![endif]-->
+</head>
+
+<body class="mdui-theme-accent-indigo mdui-appbar-with-toolbar ">
+    <!-- 可以直接引入第三方css样式 -->
+    <style>
+        /* body {} */
+    </style>
+    <div class="mdui-appbar mdui-appbar-fixed">
+        <div class="mdui-toolbar mdui-color-black">
+            <span mdui-drawer="{target: '#menu'}" class="mdui-btn mdui-btn-icon open-menu"><i
+                    class="mdui-icon material-icons">&#xe5d2;</i></span>
+            <a href="/" class="mdui-typo-headline">ITaylorfan的图床</a>
+            <div class="mdui-toolbar-spacer"></div>
+            <!-- 小人菜单 -->
+            <a href="javascript:void(0)" mdui-menu="{target: '#user'}" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">&#xe853;</i></a>
+            <ul class="mdui-menu" id="user">
+              <li class="mdui-menu-item">
+                <a href="/auth/myImg" class="mdui-ripple">我的图片</a>
+                <!-- <a href="/user/settings.html" class="mdui-ripple">设置</a> -->
+              </li>
+              <li class="mdui-divider"></li>
+              <li class="mdui-menu-item">
+                <a href="/user/logout" class="mdui-ripple">退出账号</a>
+              </li>
+            </ul>
+            <!-- Theme -->
+            <a id="set-theme" href="javascript:app.toggleTheme()" class="mdui-btn mdui-btn-icon">
+                <i class="mdui-icon material-icons">&#xe3a9;</i>
+            </a>
+        </div>
+    </div>
+
+
+    <div id="menu" class="mdui-drawer mdui-drawer-close">
+        <div class="mdui-list" mdui-collapse="{accordion: true}">
+            <a class="mdui-list-item mdui-ripple mdui-list-item-active" href="/">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">&#xe88a;</i>
+                <div class="mdui-list-item-content">首页</div>
+            </a>
+            <a class="mdui-list-item mdui-ripple mdui-list-item" href="/auth/myImg">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-deep-orange">&#xe251;</i>
+                <div class="mdui-list-item-content">我的图片</div>
+              </a>
+            <!-- 暂未实现 -->
+
+            <!-- <a class="mdui-list-item mdui-ripple " href="/index/api">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">&#xe157;</i>
+                <div class="mdui-list-item-content">接口</div>   
+            </a>
+            <a class="mdui-list-item mdui-ripple " href="/auth/login">
+                <i class="mdui-list-item-icon mdui-icon material-icons iconfont icon-login mdui-text-color-teal"></i>
+                <div class="mdui-list-item-content">登录</div>
+            </a>
+            <a class="mdui-list-item mdui-ripple " href="/auth/register">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-purple">&#xe7f0;</i>
+                <div class="mdui-list-item-content">注册</div>
+            </a> -->
+        </div>
+    </div>
+
+
+    <div class="mdui-container">
+        <main>
+            <div class="upload-container">
+                <!-- <div class="alert alert-info alert-dismissible fade show">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    开放游客上传，游客上传图片定期清理，请勿用于生产环境!
+                </div> -->
+                <div class="title">
+                    <h1>Image Upload</h1>
+                    <p>最大可上传 5.00 MB 的图片，单次同时可选择 10 张。本站已托管 <%= num %> 张图片。</p>
+                </div>
+                <form action="" method="post" enctype="multipart/form-data">
+                    <input id="image" style="display: none;" type="file" multiple name="image" accept="image/*">
+                </form>
+                <div class="success-info">
+                    <div class="mdui-tab mdui-tab-scrollable" mdui-tab>
+                        <a href="#code-url" class="mdui-ripple mdui-tab-active">URL</a>
+                        <a href="#code-html" class="mdui-ripple">HTML</a>
+                        <a href="#code-bbcode" class="mdui-ripple">BBCode</a>
+                        <a href="#code-markdown" class="mdui-ripple">Markdown</a>
+                        <a href="#code-markdown-with-link" class="mdui-ripple">Markdown with link</a>
+                    </div>
+                    <div id="code-url">
+                        <ul></ul>
+                    </div>
+                    <div id="code-html">
+                        <ul></ul>
+                    </div>
+                    <div id="code-bbcode">
+                        <ul></ul>
+                    </div>
+                    <div id="code-markdown">
+                        <ul></ul>
+                    </div>
+                    <div id="code-markdown-with-link">
+                        <ul></ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <div class="mdui-fab-wrapper">
+        <button id="to-top" class="mdui-fab mdui-ripple mdui-fab-hide mdui-color-theme-accent">
+            <i class="mdui-icon material-icons">&#xe5d8;</i>
+        </button>
+    </div>
+    <div id="loading-container">
+        <div class="mask"></div>
+        <div class="loading">
+            <div class="mdui-spinner mdui-spinner-colorful"></div>
+        </div>
+    </div>
+    <footer>
+        <div class="mdui-container">
+            Copyright &copy; 2021- present <a href="https://www.lsky.pro">Lsky Pro</a>. All rights reserved.
+            <a href="http://beian.miit.gov.cn" target="_blank">鄂ICP备2020023396号</a>. 请勿上传违规图片，违者后果自负。
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@0.4.3/dist/js/mdui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@0.8.0/marked.min.js"></script>
+    <script src="/static/javascripts/my/app1.2.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.7/js/plugins/piexif.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.7/js/plugins/sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.7/js/plugins/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.7/js/fileinput.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.7/themes/fas/theme.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.7/js/locales/zh.js"></script>
+    <script>
+        var clipboard = new ClipboardJS('.copy', {
+            text: function (trigger) {
+                return $(trigger).parent('li').text();
+            }
+        });
+
+        clipboard.on('success', function (e) {
+            app.msg(true, '复制成功');
+        });
+
+        clipboard.on('error', function (e) {
+            app.msg(false, '复制失败');
+        });
+
+        var sort = function (uls) {
+            for (var i = 0; i < uls.length; i++) {
+                var sortEle = $(uls[i]).find('li').sort(function (a, b) {
+                    return $(a).data('index') > $(b).data('index') ? 1 : -1;
+                });
+                $(uls[i]).empty().append(sortEle);
+            }
+        };
+
+        $("#image").fileinput({
+            uploadUrl: "/upload",
+            language: "zh",
+            theme: "fas",
+            previewFileType: "image",
+            autoOrientImage: true,
+            uploadAsync: true,
+            overwriteInitial: false,
+            maxFileSize: "5120",// kb
+            maxFileCount: "10",
+            showCaption: true,
+            dropZoneEnabled: true,
+            browseIcon: "<i class=\"fas fa-images\"></i> ",
+            allowedFileExtensions: JSON.parse('["jpg","jpeg","gif","png","ico"]'),
+        }).on("fileuploaded", function (event, data, previewId, index) {
+            var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader;
+            if (200 === response.code) {
+                $("#code-url ul").prepend("<li data-index=" + index + ">" + response.data.url + "<i class=\"copy iconfont icon-copy\"></i></li>");
+                $("#code-html ul").prepend("<li data-index=" + index + ">&lt;img src=\"" + response.data.url + "\" alt=\"" + response.data.name + "\" title=\"" + response.data.name + "\" /&gt;<i class=\"copy iconfont icon-copy\"></i></li>");
+                $("#code-bbcode ul").prepend("<li data-index=" + index + ">[img]" + response.data.url + "[/img]<i class=\"copy iconfont icon-copy\"></i></li>");
+                $("#code-markdown ul").prepend("<li data-index=" + index + ">![" + response.data.name + "](" + response.data.url + ")<i class=\"copy iconfont icon-copy\"></i></li>");
+                $("#code-markdown-with-link ul").prepend("<li data-index=" + index + ">[![" + response.data.name + "](" + response.data.url + ")](" + response.data.url + ")<i class=\"copy iconfont icon-copy\"></i></li>");
+
+                // 排序
+                sort(['#code-url ul', '#code-html ul', '#code-bbcode ul', '#code-markdown ul', '#code-markdown-with-link ul']);
+
+                $(".success-info").css("width", "inherit").css('display', 'block');
+                if (response.data.quota && response.data.use_quota) {
+                    $('.quota-container progress').attr('max', response.data.quota);
+                    $('.quota-container progress').val(response.data.use_quota);
+                    $('.quota-container span.quota').text(app.bytesToSize(response.data.quota));
+                    $('.quota-container span.use-quota').text(app.bytesToSize(response.data.use_quota));
+                }
+            } else if (500 === response.code) {
+                mdui.alert(response.msg, '发生异常');
+            } else {
+                mdui.alert(response.msg);
+            }
+        }).on("filecleared", function (event, data, msg) {
+            // 清空
+            $('.success-info')
+                .css('display', 'none')
+                .find('#code-url, #code-html, #code-bbcode, #code-markdown, #code-markdown-with-link')
+                .find('ul')
+                .html('');
+        });
+        $('#image').css("display", "block");
+
+        $('.success-info ul').on('mouseenter', "li", function () {
+            $('.file-preview .file-drop-zone .file-preview-thumbnails > [data-template=image]').eq($(this).data('index')).addClass('hover');
+        }).on('mouseout', 'li', function () {
+            $('.file-preview .file-drop-zone .file-preview-thumbnails > [data-template=image]').eq($(this).data('index')).removeClass('hover');
+        });
+    </script>
+    <script>
+        // Originate from https://sm.ms
+        document.addEventListener('paste', function (event) {
+            var isChrome = false;
+            if (event.clipboardData || event.originalEvent) {
+                var clipboardData = (event.clipboardData || event.originalEvent.clipboardData);
+                if (clipboardData.items) {
+                    // for chrome
+                    var items = clipboardData.items,
+                        len = items.length,
+                        blob = null;
+                    isChrome = true;
+
+                    event.preventDefault();
+
+                    let images = [];
+                    for (var i = 0; i < len; i++) {
+                        if (items[i].type.indexOf("image") !== -1) {
+                            blob = items[i].getAsFile();
+                            images.push(blob);
+                        }
+                    }
+                    if (images.length > 0) {
+                        uploadBlobFile(images);
+                    }
+                    if (blob !== null) {
+                        var reader = new FileReader();
+                        reader.onload = function (event) {
+                            var base64_str = event.target.result;
+                        }
+
+                    }
+                } else {
+                    //for firefox
+                }
+            } else {
+            }
+        });
+
+        function uploadBlobFile(images) {
+            var form = $("#image");
+            mdui.confirm('是否上传粘贴的图片?', function () {
+                $('.file-drop-zone-title').remove();
+                form.fileinput('readFiles', images);
+                setTimeout(function () {
+                    form.fileinput('upload');
+                }, 400)
+            }, function () { }, {
+                confirmText: '确定',
+                cancelText: '取消'
+            });
+        }
+    </script>
+
+    <script>
+        var ver = '1.6.0';
+        $(function () {
+            var toTop = $("#to-top"), toTopHide = function () {
+                if ($(window).scrollTop() > 50) {
+                    toTop.removeClass('mdui-fab-hide');
+                } else {
+                    toTop.addClass('mdui-fab-hide');
+                }
+            };
+            if ($(window).scrollTop() > 50) {
+                toTopHide();
+            }
+            $(window).scroll(function () {
+                toTopHide();
+            });
+
+            toTop.click(function () {
+                $('body,html').animate({ scrollTop: 0 }, 500);
+            });
+
+            $('.open-menu').click(function () {
+                if ($(window).width() > 1024) {
+                    app.cookie.set('menu', $('body').hasClass('mdui-drawer-body-left') ? 'open' : 'close', 10, '/');
+                }
+            });
+
+            $('#update').click(function () {
+                app.getLastVer(ver, true);
+            });
+
+            $('body').on('click', '.markdown-body a', function (e) {
+                e.preventDefault();
+                window.open(this.href, '_blank');
+            });
+        });
+    </script>
+    <script>
+// js统计代码</script>
+</body>
+
+</html>
